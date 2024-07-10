@@ -24,7 +24,9 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
       with:
-        context: .
-        file: ./app/Dockerfile
-        push: true
-        tags: acraspuym7cn4yli.azurecr.io/gitops-demo:${{ github.sha }}
+        login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    - run: |
+        docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo:${{ github.sha }}
+        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo:${{ github.sha }}
