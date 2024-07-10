@@ -27,7 +27,7 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: myACRName.azurecr.io/gitops-demo:${{ github.sha }}
+        tags: acraspuym7cn4yli.azurecr.io/gitops-demo:${{ github.sha }}
 
     - name: Logout of Azure
       if: always()
