@@ -28,7 +28,7 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
         context: .
-        file: ./app/Dockerfile
+        file: ./Dockerfile
     - run: |
         docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo:${{ github.sha }}
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo:${{ github.sha }}
