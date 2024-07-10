@@ -31,4 +31,4 @@ jobs:
 
     - name: Logout of Azure
       if: always()
-      uses: azure/logout@v1
+      run: az logout
