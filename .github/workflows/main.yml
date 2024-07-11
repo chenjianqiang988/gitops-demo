@@ -44,7 +44,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git config --global user.name "github-actions"
+          git config --global user.name "Kaki"
           git config --global user.email "277402816@qq.com"
           git add deploy/k8s-manifest.yaml
           git commit -m "Update Kubernetes manifest with new image tag"
