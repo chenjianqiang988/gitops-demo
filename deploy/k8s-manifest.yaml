@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: gitops-demo
-          image: acraspuym7cn4yli.azurecr.io/gitops-demo:latest
+          image: acraspuym7cn4yli.azurecr.io/gitops-demo:8fecb72de6315a99ca6ede6782fb3c51dcdb88bc
           ports:
             - containerPort: 80
