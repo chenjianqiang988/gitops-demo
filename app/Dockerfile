@@ -10,9 +10,6 @@ COPY app/requirements.txt .
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code into the container
-COPY app .
-
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
 
