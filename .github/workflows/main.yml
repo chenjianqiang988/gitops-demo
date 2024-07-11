@@ -28,7 +28,7 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
     - run: |
-        docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo:$${{ github.sha }} ./app
+        docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo:${{ github.sha }} ./app
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo:${{ github.sha }}
 
   update-k8s-manifest:
