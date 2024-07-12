@@ -40,9 +40,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Update Kubernetes manifest
+      - name: Update Kubernetes manifest for gitops-demo1
         run: |
           sed -i "s|image: .*|image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo1:${{ github.sha }}|" deploy/k8s-manifest.yaml
+  
+      - name: Update Kubernetes manifest for gitops-demo2
+        run: |
           sed -i "s|image: .*|image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo2:${{ github.sha }}|" deploy/k8s-manifest.yaml
 
       - name: Commit and push changes
