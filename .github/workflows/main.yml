@@ -42,12 +42,11 @@ jobs:
 
       - name: Update Kubernetes manifest for gitops-demo1
         run: |
-          sed -i "s|image: .*|image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo1:${{ github.sha }}|" deploy/k8s-manifest.yaml
+          sed -i "s|image: acr4d19045dcc6d1cc2.azurecr.io/gitops-demo1:.*|image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo1:${{ github.sha }}|" deploy/k8s-manifest.yaml
   
       - name: Update Kubernetes manifest for gitops-demo2
         run: |
-          sed -i "s|image: .*|image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo2:${{ github.sha }}|" deploy/k8s-manifest.yaml
-
+          sed -i "s|image: acr4d19045dcc6d1cc2.azurecr.io/gitops-demo2:.*|image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo2:${{ github.sha }}|" deploy/k8s-manifest.yaml
       - name: Commit and push changes
         run: |
           git config --global user.name "277402816"
