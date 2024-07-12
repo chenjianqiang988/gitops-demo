@@ -28,8 +28,10 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
     - run: |
-        docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo:${{ github.sha }} ./app
-        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo:${{ github.sha }}
+        docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo1:${{ github.sha }} ./app1
+        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo1:${{ github.sha }}
+        docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo2:${{ github.sha }} ./app2
+        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo2:${{ github.sha }}
 
   update-k8s-manifest:
     runs-on: ubuntu-latest
@@ -40,7 +42,8 @@ jobs:
 
       - name: Update Kubernetes manifest
         run: |
-          sed -i "s|image: .*|image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo:${{ github.sha }}|" deploy/k8s-manifest.yaml
+          sed -i "s|image: .*|image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo1:${{ github.sha }}|" deploy/k8s-manifest.yaml
+          sed -i "s|image: .*|image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/gitops-demo2:${{ github.sha }}|" deploy/k8s-manifest.yaml
 
       - name: Commit and push changes
         run: |

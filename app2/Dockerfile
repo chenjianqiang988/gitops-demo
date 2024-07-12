@@ -2,7 +2,7 @@
 FROM python:3.8-slim
 
 # Set the working directory in the container
-WORKDIR /app
+WORKDIR /app2
 
 # Copy the requirements.txt file into the container
 COPY requirements.txt .
@@ -14,10 +14,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src .
 
 # Make port 5000 available to the world outside this container
-EXPOSE 5000
+EXPOSE 5001
 
 # Define environment variable
 ENV NAME=World
 
 # Run app.py when the container launches
-CMD ["python", "app.py"]
+CMD ["python", "app2.py"]

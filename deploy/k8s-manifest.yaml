@@ -1,31 +1,63 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gitops-demo
+  name: gitops-demo1
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: gitops-demo
+      app: gitops-demo1
   template:
     metadata:
       labels:
-        app: gitops-demo
+        app: gitops-demo1
     spec:
       containers:
-        - name: gitops-demo
-          image: acraspuym7cn4yli.azurecr.io/gitops-demo:d50875dedc51a3faf6961baa7941e44cb5d771c5
+        - name: gitops-demo1
+          image: acr4d19045dcc6d1cc2.azurecr.io/gitops-demo1:d50875dedc51a3faf6961baa7941e44cb5d771c5
           ports:
-            - containerPort: 80
+            - containerPort: 8080
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitops-demo2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: gitops-demo2
+  template:
+    metadata:
+      labels:
+        app: gitops-demo2
+    spec:
+      containers:
+        - name: gitops-demo2
+          image: acr4d19045dcc6d1cc2.azurecr.io/gitops-demo2:d50875dedc51a3faf6961baa7941e44cb5d771c5
+          ports:
+            - containerPort: 8081
+---          
 apiVersion: v1
 kind: Service
 metadata:
-  name: gitops-demo
+  name: gitops-demo1
 spec:
   type: LoadBalancer
   ports:
-  - port: 80
+  - port: 8080
     targetPort: 5000
   selector:
-    app: gitops-demo
+    app: gitops-demo1
+---          
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitops-demo2
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8081
+    targetPort: 5001
+  selector:
+    app: gitops-demo2
