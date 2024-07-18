@@ -110,7 +110,11 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+    - name: 'Get ACR Name'
+      id: get_acr_name
+      run: |
+        ACR_NAME=$(az acr list --resource-group ${{ secrets.RESOURCE_GROUP }} --query '[0].name' --output tsv)
+        echo "ACR_NAME=${ACR_NAME}" >> $GITHUB_ENV
     - name: 'Get ACR URL'
       id: get_acr_url
       run: |
