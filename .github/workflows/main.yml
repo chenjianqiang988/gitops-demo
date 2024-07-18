@@ -144,6 +144,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: 'Get ACR Name'
+        id: get_acr_name
+        run: |
+          ACR_NAME=$(az acr list --resource-group ${{ secrets.RESOURCE_GROUP }} --query '[0].name' --output tsv)
+          echo "ACR_NAME=${ACR_NAME}" >> $GITHUB_ENV
+      - name: 'Get ACR URL'
+        id: get_acr_url
+        run: |
+          ACR_URL=$(az acr show --name ${{ env.ACR_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --query 'loginServer' -o tsv)
+          echo "ACR_URL=${ACR_URL}" >> $GITHUB_ENV
       - name: Update Kubernetes manifest for gitops-demo1
         run: |
           sed -i "s|image: ${{ env.ACR_URL }}/gitops-demo1:.*|image: ${{ env.ACR_URL }}/gitops-demo1:${{ github.sha }}|" deploy/k8s-manifest.yaml
