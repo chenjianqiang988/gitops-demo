@@ -6,67 +6,67 @@ on:
       - main
 
 jobs:
-  terraform:
-    name: 'Terraform Apply'
-    runs-on: ubuntu-latest
+  # terraform:
+  #   name: 'Terraform Apply'
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: 'Checkout GitHub Actions'
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: 'Checkout GitHub Actions'
+  #       uses: actions/checkout@v3
 
-      - name: 'Set up Terraform'
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.9.1
-      - name: 'Azure Login'
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: 'Terraform Init'
-        run: terraform init
-        working-directory: ./infrastructure/terraform
+  #     - name: 'Set up Terraform'
+  #       uses: hashicorp/setup-terraform@v2
+  #       with:
+  #         terraform_version: 1.9.1
+  #     - name: 'Azure Login'
+  #       uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #     - name: 'Terraform Init'
+  #       run: terraform init
+  #       working-directory: ./infrastructure/terraform
 
-      - name: 'Terraform Plan'
-        run: terraform plan
-        working-directory: ./infrastructure/terraform
+  #     - name: 'Terraform Plan'
+  #       run: terraform plan
+  #       working-directory: ./infrastructure/terraform
 
-      - name: 'Terraform Apply'
-        run: terraform apply -auto-approve
-        working-directory: ./infrastructure/terraform
+  #     - name: 'Terraform Apply'
+  #       run: terraform apply -auto-approve
+  #       working-directory: ./infrastructure/terraform
 
 
-  install_argo_cd:
-    name: 'Install Argo CD'
-    needs: terraform
-    runs-on: ubuntu-latest
+  # install_argo_cd:
+  #   name: 'Install Argo CD'
+  #   needs: terraform
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: 'Checkout code'
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: 'Checkout code'
+  #       uses: actions/checkout@v3
 
-      - name: 'Azure Login'
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #     - name: 'Azure Login'
+  #       uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: 'Configure kubectl'
-        run: |
-          az aks get-credentials --resource-group ${{ secrets.RESOURCE_GROUP }} --name myAKSCluster
+  #     - name: 'Configure kubectl'
+  #       run: |
+  #         az aks get-credentials --resource-group ${{ secrets.RESOURCE_GROUP }} --name myAKSCluster
 
-      - name: 'Install Argo CD'
-        run: |
-          kubectl create namespace argocd
-          kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-          kubectl wait --for=condition=available --timeout=600s deployment/argocd-server -n argocd
+  #     - name: 'Install Argo CD'
+  #       run: |
+  #         kubectl create namespace argocd
+  #         kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+  #         kubectl wait --for=condition=available --timeout=600s deployment/argocd-server -n argocd
 
-      - name: 'Deploy Argo CD App Configuration'
-        run: |
-          kubectl apply -f ./deploy/argocd-app.yaml
+  #     - name: 'Deploy Argo CD App Configuration'
+  #       run: |
+  #         kubectl apply -f ./deploy/argocd-app.yaml
   
   assign_acrpull_role:
     name: 'Assign acrpull Role to AKS'
     runs-on: ubuntu-latest
-    needs: install_argo_cd
+    # needs: install_argo_cd
 
     steps:
       - name: 'Azure Login'
