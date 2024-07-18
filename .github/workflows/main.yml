@@ -114,7 +114,7 @@ jobs:
     - name: 'Get ACR URL'
       id: get_acr_url
       run: |
-        ACR_URL=$(az acr show --name $ACR_NAME --resource-group ${{ secrets.RESOURCE_GROUP }} --query 'loginServer' -o tsv)
+        ACR_URL=$(az acr show --name ${{ env.ACR_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --query 'loginServer' -o tsv)
         echo "ACR_URL=${ACR_URL}" >> $GITHUB_ENV
     - name: Build and push Docker image
       uses: azure/docker-login@v1
