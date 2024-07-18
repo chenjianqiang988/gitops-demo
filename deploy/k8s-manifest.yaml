@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: gitops-demo1
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: gitops-demo1
@@ -23,7 +23,7 @@ kind: Deployment
 metadata:
   name: gitops-demo2
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: gitops-demo2
