@@ -83,7 +83,7 @@ jobs:
       - name: 'Get AKS SP Client ID'
         id: get_sp_id
         run: |
-          SP_APP_ID=$(az aks show --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --query servicePrincipalProfile.clientId --output tsv)
+          SP_APP_ID=$(az aks show --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --query identityProfile.kubeletidentity.clientId --output tsv)
           echo "::set-output name=SP_APP_ID::$SP_APP_ID"
 
       - name: 'Get ACR Name'
