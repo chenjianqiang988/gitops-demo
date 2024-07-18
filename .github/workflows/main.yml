@@ -18,7 +18,10 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.9.1
-
+      - name: 'Azure Login'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: 'Terraform Init'
         run: terraform init
         working-directory: ./infrastructure/terraform
@@ -31,13 +34,10 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: ./infrastructure/terraform
 
-      - name: 'Azure Login'
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
   install_argo_cd:
     name: 'Install Argo CD'
+    needs: terraform
     runs-on: ubuntu-latest
 
     steps:
@@ -99,7 +99,7 @@ jobs:
           
   build-and-push:
     runs-on: ubuntu-latest
-
+    needs: assign_acrpull_role
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
