@@ -53,11 +53,11 @@ jobs:
         run: |
           az aks get-credentials --resource-group ${{ secrets.RESOURCE_GROUP }} --name myAKSCluster
 
-      - name: 'Install Argo CD'
-        run: |
-          kubectl create namespace argocd
-          kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-          kubectl wait --for=condition=available --timeout=600s deployment/argocd-server -n argocd
+      # - name: 'Install Argo CD'
+      #   run: |
+      #     kubectl create namespace argocd
+      #     kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+      #     kubectl wait --for=condition=available --timeout=600s deployment/argocd-server -n argocd
       # - name: 'Expose Argo CD Service'
       #   run: |
       #     kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
