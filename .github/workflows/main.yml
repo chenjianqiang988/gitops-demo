@@ -71,7 +71,7 @@ jobs:
   assign_acrpull_role:
     name: 'Assign acrpull Role to AKS'
     runs-on: ubuntu-latest
-    # needs: install_argo_cd
+    needs: install_argo_cd
 
     steps:
       - name: 'Azure Login'
