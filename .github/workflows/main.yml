@@ -80,13 +80,10 @@ jobs:
           SUBSCRIPTION_ID=$(az account show --query id --output tsv)
           echo "SUBSCRIPTION_ID=${SUBSCRIPTION_ID}" >> $GITHUB_ENV
 
-      - name: 'Get AKS SP Client ID and Object ID'
-        id: get_sp_info
+      - name: 'Get AKS SP Object ID'
+        id: get_sp_object_id
         run: |
-          SP_INFO=$(az aks show --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --query identityProfile.kubeletidentity -o tsv)
-          SP_CLIENT_ID=$(echo $SP_INFO | cut -f1)
-          SP_OBJECT_ID=$(echo $SP_INFO | cut -f2)
-          echo "SP_CLIENT_ID=${SP_CLIENT_ID}" >> $GITHUB_ENV
+          SP_OBJECT_ID=$(az aks show --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --query 'identityProfile.kubeletidentity.objectId' -o tsv)
           echo "SP_OBJECT_ID=${SP_OBJECT_ID}" >> $GITHUB_ENV
 
       - name: 'Get ACR Name'
@@ -97,8 +94,8 @@ jobs:
 
       - name: 'Assign acrpull Role'
         run: |
-          az role assignment create --assignee-object-id ${SP_OBJECT_ID} --assignee-principal-type ServicePrincipal --role acrpull --scope /subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${{ secrets.RESOURCE_GROUP }}/providers/Microsoft.ContainerRegistry/registries/${ACR_NAME}
-          
+          az role assignment create --assignee-object-id ${{ env.SP_OBJECT_ID }} --assignee-principal-type ServicePrincipal --role acrpull --scope /subscriptions/${{ env.SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.RESOURCE_GROUP }}/providers/Microsoft.ContainerRegistry/registries/${{ env.ACR_NAME }}
+
   build-and-push:
     runs-on: ubuntu-latest
     needs: assign_acrpull_role
