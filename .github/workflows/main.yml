@@ -80,11 +80,14 @@ jobs:
           SUBSCRIPTION_ID=$(az account show --query id --output tsv)
           echo "::set-output name=SUBSCRIPTION_ID::$SUBSCRIPTION_ID"
 
-      - name: 'Get AKS SP Client ID'
-        id: get_sp_id
+      - name: 'Get AKS SP Client ID and Object ID'
+        id: get_sp_info
         run: |
-          SP_APP_ID=$(az aks show --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --query identityProfile.kubeletidentity.clientId --output tsv)
-          echo "::set-output name=SP_APP_ID::$SP_APP_ID"
+          SP_INFO=$(az aks show --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --query '{clientId:identityProfile.kubeletidentity.clientId,objectId:identityProfile.kubeletidentity.objectId}' --output tsv)
+          SP_CLIENT_ID=$(echo $SP_INFO | cut -f1)
+          SP_OBJECT_ID=$(echo $SP_INFO | cut -f2)
+          echo "::set-output name=SP_CLIENT_ID::$SP_CLIENT_ID"
+          echo "::set-output name=SP_OBJECT_ID::$SP_OBJECT_ID"
 
       - name: 'Get ACR Name'
         id: get_acr_name
@@ -94,7 +97,7 @@ jobs:
 
       - name: 'Assign acrpull Role'
         run: |
-          az role assignment create --assignee ${{ steps.get_sp_id.outputs.SP_APP_ID }} --role acrpull --scope /subscriptions/${{ steps.get_subscription_id.outputs.SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.RESOURCE_GROUP }}/providers/Microsoft.ContainerRegistry/registries/${{ steps.get_acr_name.outputs.ACR_NAME }} --assignee-principal-type ServicePrincipal
+          az role assignment create --assignee-object-id ${{ steps.get_sp_info.outputs.SP_OBJECT_ID }} --assignee-principal-type ServicePrincipal --role acrpull --scope /subscriptions/${{ steps.get_subscription_id.outputs.SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.RESOURCE_GROUP }}/providers/Microsoft.ContainerRegistry/registries/${{ steps.get_acr_name.outputs.ACR_NAME }}
 
           
   build-and-push:
