@@ -94,7 +94,7 @@ jobs:
 
       - name: 'Assign acrpull Role'
         run: |
-          az role assignment create --assignee ${{ steps.get_sp_id.outputs.SP_APP_ID }} --role acrpull --scope /subscriptions/${{ steps.get_subscription_id.outputs.SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.RESOURCE_GROUP }}/providers/Microsoft.ContainerRegistry/registries/${{ steps.get_acr_name.outputs.ACR_NAME }}
+          az role assignment create --assignee ${{ steps.get_sp_id.outputs.SP_APP_ID }} --role acrpull --scope /subscriptions/${{ steps.get_subscription_id.outputs.SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.RESOURCE_GROUP }}/providers/Microsoft.ContainerRegistry/registries/${{ steps.get_acr_name.outputs.ACR_NAME }} --assignee-principal-type ServicePrincipal
 
           
   build-and-push:
