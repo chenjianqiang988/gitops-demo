@@ -111,11 +111,11 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Get ACR URL
+    - name: 'Get ACR URL'
       id: get_acr_url
       run: |
-        ACR_URL=$(az acr show --name ${{ env.ACR_NAME }} --query loginServer --output tsv)
-        echo "ACR_URL=$ACR_URL" >> $GITHUB_ENV
+        ACR_URL=$(az acr show --name ${{ secrets.ACR_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --query 'loginServer' -o tsv)
+        echo "ACR_URL=${ACR_URL}" >> $GITHUB_ENV
     - name: Build and push Docker image
       uses: azure/docker-login@v1
       with:
@@ -137,11 +137,11 @@ jobs:
 
       - name: Update Kubernetes manifest for gitops-demo1
         run: |
-          sed -i "s|image: acr4d19045dcc6d1cc2.azurecr.io/gitops-demo1:.*|image: ${{ env.ACR_URL }}/gitops-demo1:${{ github.sha }}|" deploy/k8s-manifest.yaml
+          sed -i "s|image: acr4d19045dcc6d1cc2.azurecr.io/gitops-demo1:.*|image: $ACR_URL/gitops-demo1:${{ github.sha }}|" deploy/k8s-manifest.yaml
   
       - name: Update Kubernetes manifest for gitops-demo2
         run: |
-          sed -i "s|image: acr4d19045dcc6d1cc2.azurecr.io/gitops-demo2:.*|image: ${{ env.ACR_URL }}/gitops-demo2:${{ github.sha }}|" deploy/k8s-manifest.yaml
+          sed -i "s|image: acr4d19045dcc6d1cc2.azurecr.io/gitops-demo2:.*|image: $ACR_URL/gitops-demo2:${{ github.sha }}|" deploy/k8s-manifest.yaml
       - name: Commit and push changes
         run: |
           git config --global user.name "277402816"
