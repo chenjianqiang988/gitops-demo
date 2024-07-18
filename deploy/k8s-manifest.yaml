@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: gitops-demo1
-          image: /gitops-demo1:653338de25b7ff98250131b546958ab55058da8e
+          image: /gitops-demo1:633e59d6cecf0cd6eaf31ef6da2fa4a6a3f095a3
           ports:
             - containerPort: 5000
 ---
@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: gitops-demo2
-          image: /gitops-demo2:653338de25b7ff98250131b546958ab55058da8e
+          image: /gitops-demo2:633e59d6cecf0cd6eaf31ef6da2fa4a6a3f095a3
           ports:
             - containerPort: 5000
 ---          
