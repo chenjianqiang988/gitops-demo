@@ -136,8 +136,6 @@ jobs:
         docker push ${{ env.ACR_URL }}/gitops-demo1:${{ github.sha }}
         docker build -t ${{ env.ACR_URL }}/gitops-demo2:${{ github.sha }} ./app2
         docker push ${{ env.ACR_URL }}/gitops-demo2:${{ github.sha }}
-        sed -i "s|image: acr.azurecr.io/gitops-demo1:.*|image: ${{ env.ACR_URL }}/gitops-demo1:${{ github.sha }}|" deploy/k8s-manifest.yaml
-        sed -i "s|image: acr.azurecr.io/gitops-demo2:.*|image: ${{ env.ACR_URL }}/gitops-demo2:${{ github.sha }}|" deploy/k8s-manifest.yaml
 
 
   update-k8s-manifest:
@@ -162,11 +160,11 @@ jobs:
           echo "ACR_URL=${ACR_URL}" >> $GITHUB_ENV
       - name: Update Kubernetes manifest for gitops-demo1
         run: |
-          sed -i "s|image: ${{ env.ACR_URL }}/gitops-demo1:.*|image: ${{ env.ACR_URL }}/gitops-demo1:${{ github.sha }}|" deploy/k8s-manifest.yaml
-      - name: Check Git Status
-        run: git status
+            sed -i "s|image: acr.azurecr.io/gitops-demo1:.*|image: ${{ env.ACR_URL }}/gitops-demo1:${{ github.sha }}|" deploy/k8s-manifest.yaml
+            sed -i "s|image: ${{ env.ACR_URL }}/gitops-demo1:.*|image: ${{ env.ACR_URL }}/gitops-demo1:${{ github.sha }}|" deploy/k8s-manifest.yaml
       - name: Update Kubernetes manifest for gitops-demo2
         run: |
+          sed -i "s|image: acr.azurecr.io/gitops-demo2:.*|image: ${{ env.ACR_URL }}/gitops-demo2:${{ github.sha }}|" deploy/k8s-manifest.yaml
           sed -i "s|image: ${{ env.ACR_URL }}/gitops-demo2:.*|image: ${{ env.ACR_URL }}/gitops-demo2:${{ github.sha }}|" deploy/k8s-manifest.yaml
       - name: Commit and push changes
         run: |
