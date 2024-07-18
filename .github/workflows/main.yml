@@ -6,6 +6,97 @@ on:
       - main
 
 jobs:
+  terraform:
+    name: 'Terraform Apply'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout GitHub Actions'
+        uses: actions/checkout@v3
+
+      - name: 'Set up Terraform'
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.9.1
+
+      - name: 'Terraform Init'
+        run: terraform init
+        working-directory: ./infrastructure/terraform
+
+      - name: 'Terraform Plan'
+        run: terraform plan
+        working-directory: ./infrastructure/terraform
+
+      - name: 'Terraform Apply'
+        run: terraform apply -auto-approve
+        working-directory: ./infrastructure/terraform
+
+      - name: 'Azure Login'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+  install_argo_cd:
+    name: 'Install Argo CD'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout code'
+        uses: actions/checkout@v3
+
+      - name: 'Azure Login'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: 'Configure kubectl'
+        run: |
+          az aks get-credentials --resource-group ${{ secrets.RESOURCE_GROUP }} --name myAKSCluster
+
+      - name: 'Install Argo CD'
+        run: |
+          kubectl create namespace argocd
+          kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+          kubectl wait --for=condition=available --timeout=600s deployment/argocd-server -n argocd
+
+      - name: 'Deploy Argo CD App Configuration'
+        run: |
+          kubectl apply -f ./deploy/argocd-app.yaml
+  
+  assign_acrpull_role:
+    name: 'Assign acrpull Role to AKS'
+    runs-on: ubuntu-latest
+    needs: install_argo_cd
+
+    steps:
+      - name: 'Azure Login'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: 'Get Subscription ID'
+        id: get_subscription_id
+        run: |
+          SUBSCRIPTION_ID=$(az account show --query id --output tsv)
+          echo "::set-output name=SUBSCRIPTION_ID::$SUBSCRIPTION_ID"
+
+      - name: 'Get AKS SP Client ID'
+        id: get_sp_id
+        run: |
+          SP_APP_ID=$(az aks show --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --query servicePrincipalProfile.clientId --output tsv)
+          echo "::set-output name=SP_APP_ID::$SP_APP_ID"
+
+      - name: 'Get ACR Name'
+        id: get_acr_name
+        run: |
+          ACR_NAME=$(az acr list --resource-group ${{ secrets.RESOURCE_GROUP }} --query '[0].name' --output tsv)
+          echo "::set-output name=ACR_NAME::$ACR_NAME"
+
+      - name: 'Assign acrpull Role'
+        run: |
+          az role assignment create --assignee ${{ steps.get_sp_id.outputs.SP_APP_ID }} --role acrpull --scope /subscriptions/${{ steps.get_subscription_id.outputs.SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.RESOURCE_GROUP }}/providers/Microsoft.ContainerRegistry/registries/${{ steps.get_acr_name.outputs.ACR_NAME }}
+
+          
   build-and-push:
     runs-on: ubuntu-latest
 
