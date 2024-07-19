@@ -20,6 +20,7 @@ resource "helm_release" "external_nginx" {
   namespace        = "ingress"
   create_namespace = true
   version          = "4.11.1"
+  timeout = 600  # 增加超时时间到600秒
 
   set {
     name  = "controller.service.type"
