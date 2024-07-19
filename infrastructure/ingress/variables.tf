@@ -24,8 +24,7 @@ variable "acr_sku" {
   description = "Tier of your Azure Container Registry. Geo-replication requires Premium SKU."
   default     = "Premium"
 }
-
-variable "aks_name" {
-  description = "The name of the AKS cluster to be created."
-  default     = "myAKSCluster"
+variable "resource_group_name" {
+  description = "The name of the Resource Group to be created."
+  default     = "mira-test-group"
 }

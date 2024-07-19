@@ -1,6 +1,7 @@
+
 data "azurerm_kubernetes_cluster" "this" {
-  name                = azurerm_kubernetes_cluster.aks.name
-  resource_group_name = azurerm_kubernetes_cluster.aks.resource_group_name
+  name                = var.aks_name
+  resource_group_name = var.resource_group_name
 }
 
 provider "helm" {
@@ -20,7 +21,6 @@ resource "helm_release" "external_nginx" {
   namespace        = "ingress"
   create_namespace = true
   version          = "4.11.1"
-  timeout = 600  # 增加超时时间到600秒
 
   set {
     name  = "controller.service.type"

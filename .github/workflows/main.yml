@@ -34,6 +34,34 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: ./infrastructure/terraform
 
+  ingress:
+    name: 'Terraform Apply'
+    needs: terraform
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout GitHub Actions'
+        uses: actions/checkout@v3
+
+      - name: 'Set up Terraform'
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.9.1
+      - name: 'Azure Login'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: 'Terraform Init'
+        run: terraform init
+        working-directory: ./infrastructure/ingress
+
+      - name: 'Terraform Plan'
+        run: terraform plan
+        working-directory: ./infrastructure/ingress
+
+      - name: 'Terraform Apply'
+        run: terraform apply -auto-approve
+        working-directory: ./infrastructure/ingress
 
   install_argo_cd:
     name: 'Install Argo CD'
