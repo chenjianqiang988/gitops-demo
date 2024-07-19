@@ -43,9 +43,9 @@ kind: Service
 metadata:
   name: gitops-demo1
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
-  - port: 8080
+  - port: 5000
     targetPort: 5000
   selector:
     app: gitops-demo1
@@ -55,9 +55,34 @@ kind: Service
 metadata:
   name: gitops-demo2
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
-  - port: 8081
+  - port: 5000
     targetPort: 5000
   selector:
     app: gitops-demo2
+---        
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gitops-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /demo1
+        pathType: Prefix
+        backend:
+          service:
+            name: gitops-demo1
+            port:
+              number: 5000
+      - path: /demo2
+        pathType: Prefix
+        backend:
+          service:
+            name: gitops-demo2
+            port:
+              number: 5000
