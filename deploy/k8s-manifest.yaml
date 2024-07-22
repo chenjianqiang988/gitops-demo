@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: gitops-demo1
-          image: acr09cb257016cb09d9.azurecr.io/gitops-demo1:edc7913e8966fea1ba5234eab98c4b8734b653a5
+          image: acr.azurecr.io/gitops-demo1:1
           ports:
             - containerPort: 5000
 ---
@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: gitops-demo2
-          image: acr09cb257016cb09d9.azurecr.io/gitops-demo2:edc7913e8966fea1ba5234eab98c4b8734b653a5
+          image: acr.azurecr.io/gitops-demo2:2
           ports:
             - containerPort: 5000
 ---          
@@ -67,7 +67,7 @@ kind: Ingress
 metadata:
   name: gitops-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "ingress-nginx"
 spec:
   rules:
   - http:
