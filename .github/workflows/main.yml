@@ -22,9 +22,9 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: 'Get AKS credentials'
-        run: |
-          az aks get-credentials --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} 
+      # - name: 'Get AKS credentials'
+      #   run: |
+      #     az aks get-credentials --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} 
       - name: 'Terraform Init'
         run: terraform init
         working-directory: ./infrastructure/terraform
