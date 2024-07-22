@@ -19,8 +19,5 @@ resource "helm_release" "external_nginx" {
   create_namespace = true
   version          = "4.11.1"
 
-  set {
-    name  = "controller.service.type"
-    value = "LoadBalancer"
-  }
+  values = [file("${path.module}/values/ingress.yaml")]
 }

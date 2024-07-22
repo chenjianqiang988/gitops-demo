@@ -6,103 +6,100 @@ on:
       - main
 
 jobs:
-  # terraform:
-  #   name: 'Terraform Apply'
-  #   runs-on: ubuntu-latest
+  terraform:
+    name: 'Terraform Apply'
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: 'Checkout GitHub Actions'
-  #       uses: actions/checkout@v3
+    steps:
+      - name: 'Checkout GitHub Actions'
+        uses: actions/checkout@v3
 
-  #     - name: 'Set up Terraform'
-  #       uses: hashicorp/setup-terraform@v2
-  #       with:
-  #         terraform_version: 1.9.1
-  #     - name: 'Azure Login'
-  #       uses: azure/login@v1
-  #       with:
-  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
-  #     # - name: 'Get AKS credentials'
-  #     #   run: |
-  #     #     az aks get-credentials --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} 
-  #     - name: 'Terraform Init'
-  #       run: terraform init
-  #       working-directory: ./infrastructure/terraform
+      - name: 'Set up Terraform'
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.9.1
+      - name: 'Azure Login'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: 'Terraform Init'
+        run: terraform init
+        working-directory: ./infrastructure/terraform
 
-  #     - name: 'Terraform Plan'
-  #       run: terraform plan
-  #       working-directory: ./infrastructure/terraform
+      - name: 'Terraform Plan'
+        run: terraform plan
+        working-directory: ./infrastructure/terraform
 
-  #     - name: 'Terraform Apply'
-  #       run: terraform apply -auto-approve
-  #       working-directory: ./infrastructure/terraform
+      - name: 'Terraform Apply'
+        run: terraform apply -auto-approve
+        working-directory: ./infrastructure/terraform
 
-  # install_argo_cd:
-  #   name: 'Install Argo CD'
-  #   needs: terraform
-  #   runs-on: ubuntu-latest
+  install_argo_cd:
+    name: 'Install Argo CD'
+    needs: terraform
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: 'Checkout code'
-  #       uses: actions/checkout@v3
+    steps:
+      - name: 'Checkout code'
+        uses: actions/checkout@v3
 
-  #     - name: 'Azure Login'
-  #       uses: azure/login@v1
-  #       with:
-  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: 'Azure Login'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-  #     - name: 'Configure kubectl'
-  #       run: |
-  #         az aks get-credentials --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} 
+      - name: 'Configure kubectl'
+        run: |
+          az aks get-credentials --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} 
 
-  #     - name: 'Install Argo CD'
-  #       run: |
-  #         kubectl create namespace argocd
-  #         kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-  #         kubectl wait --for=condition=available --timeout=600s deployment/argocd-server -n argocd
-  #     - name: 'Expose Argo CD Service'
-  #       run: |
-  #         kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
-  #     - name: 'Deploy Argo CD App Configuration'
-  #       run: |
-  #         kubectl apply -f ./deploy/argocd-app.yaml
+      - name: 'Install Argo CD'
+        run: |
+          kubectl create namespace argocd
+          kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+          kubectl wait --for=condition=available --timeout=600s deployment/argocd-server -n argocd
+      - name: 'Expose Argo CD Service'
+        run: |
+          kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+      - name: 'Deploy Argo CD App Configuration'
+        run: |
+          kubectl apply -f ./deploy/argocd-app.yaml
   
-  # assign_acrpull_role:
-  #   name: 'Assign acrpull Role to AKS'
-  #   runs-on: ubuntu-latest
-  #   needs: install_argo_cd
+  assign_acrpull_role:
+    name: 'Assign acrpull Role to AKS'
+    runs-on: ubuntu-latest
+    needs: install_argo_cd
 
-  #   steps:
-  #     - name: 'Azure Login'
-  #       uses: azure/login@v1
-  #       with:
-  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
+    steps:
+      - name: 'Azure Login'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-  #     - name: 'Get Subscription ID'
-  #       id: get_subscription_id
-  #       run: |
-  #         SUBSCRIPTION_ID=$(az account show --query id --output tsv)
-  #         echo "SUBSCRIPTION_ID=${SUBSCRIPTION_ID}" >> $GITHUB_ENV
+      - name: 'Get Subscription ID'
+        id: get_subscription_id
+        run: |
+          SUBSCRIPTION_ID=$(az account show --query id --output tsv)
+          echo "SUBSCRIPTION_ID=${SUBSCRIPTION_ID}" >> $GITHUB_ENV
 
-  #     - name: 'Get AKS SP Object ID'
-  #       id: get_sp_object_id
-  #       run: |
-  #         SP_OBJECT_ID=$(az aks show --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --query 'identityProfile.kubeletidentity.objectId' -o tsv)
-  #         echo "SP_OBJECT_ID=${SP_OBJECT_ID}" >> $GITHUB_ENV
+      - name: 'Get AKS SP Object ID'
+        id: get_sp_object_id
+        run: |
+          SP_OBJECT_ID=$(az aks show --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --query 'identityProfile.kubeletidentity.objectId' -o tsv)
+          echo "SP_OBJECT_ID=${SP_OBJECT_ID}" >> $GITHUB_ENV
 
-  #     - name: 'Get ACR Name'
-  #       id: get_acr_name
-  #       run: |
-  #         ACR_NAME=$(az acr list --resource-group ${{ secrets.RESOURCE_GROUP }} --query '[0].name' --output tsv)
-  #         echo "ACR_NAME=${ACR_NAME}" >> $GITHUB_ENV
+      - name: 'Get ACR Name'
+        id: get_acr_name
+        run: |
+          ACR_NAME=$(az acr list --resource-group ${{ secrets.RESOURCE_GROUP }} --query '[0].name' --output tsv)
+          echo "ACR_NAME=${ACR_NAME}" >> $GITHUB_ENV
 
-  #     - name: 'Assign acrpull Role'
-  #       run: |
-  #         az role assignment create --assignee-object-id ${{ env.SP_OBJECT_ID }} --assignee-principal-type ServicePrincipal --role acrpull --scope /subscriptions/${{ env.SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.RESOURCE_GROUP }}/providers/Microsoft.ContainerRegistry/registries/${{ env.ACR_NAME }}
+      - name: 'Assign acrpull Role'
+        run: |
+          az role assignment create --assignee-object-id ${{ env.SP_OBJECT_ID }} --assignee-principal-type ServicePrincipal --role acrpull --scope /subscriptions/${{ env.SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.RESOURCE_GROUP }}/providers/Microsoft.ContainerRegistry/registries/${{ env.ACR_NAME }}
 
   build-and-push:
     runs-on: ubuntu-latest
-    # needs: assign_acrpull_role
+    needs: assign_acrpull_role
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
