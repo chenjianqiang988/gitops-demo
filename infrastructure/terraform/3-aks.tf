@@ -1,12 +1,14 @@
 
 # 生成SSH私钥
 resource "tls_private_key" "example" {
+  count    = tls_private_key.example == null ? 1 : 0
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
 # 创建AKS集群
 resource "azurerm_kubernetes_cluster" "aks" {
+  count    = azurerm_kubernetes_cluster.aks == null ? 1 : 0
   name                = var.aks_name
   location            = var.location
   resource_group_name = azurerm_resource_group.this.name

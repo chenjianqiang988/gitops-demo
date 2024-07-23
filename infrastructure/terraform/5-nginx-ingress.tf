@@ -8,6 +8,7 @@ provider "helm" {
 }
 
 resource "helm_release" "external_nginx" {
+  count    = helm_release.external_nginx == null ? 1 : 0
   depends_on = [
     azurerm_kubernetes_cluster.aks
   ]
