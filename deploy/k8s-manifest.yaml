@@ -37,6 +37,26 @@ spec:
           image: acr798b329f69ffe2be.azurecr.io/gitops-demo2:1edcc49b7233c7766f2c151df0c9d7863d9a98b7
           ports:
             - containerPort: 5000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitops-demo3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitops-demo3
+  template:
+    metadata:
+      labels:
+        app: gitops-demo3
+    spec:
+      containers:
+        - name: gitops-demo3
+          image: acr.azurecr.io/gitops-demo2:3
+          ports:
+            - containerPort: 5000
 ---          
 apiVersion: v1
 kind: Service
@@ -61,6 +81,18 @@ spec:
     targetPort: 5000
   selector:
     app: gitops-demo2
+---          
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitops-demo3
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    app: gitops-demo3
 ---        
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -83,5 +115,12 @@ spec:
         backend:
           service:
             name: gitops-demo2
+            port:
+              number: 5000
+      - path: /demo3
+        pathType: Prefix
+        backend:
+          service:
+            name: gitops-demo3
             port:
               number: 5000
