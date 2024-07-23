@@ -10,7 +10,7 @@ resource "azurerm_container_registry" "acr" {
   count    = azurerm_container_registry.acr == null ? 1 : 0
   name                = local.acr_name
   location            = local.region
-  resource_group_name = azurerm_resource_group.this.name
+  resource_group_name = azurerm_resource_group.this[0].name
   sku                 = var.acr_sku
   admin_enabled       = false
 }

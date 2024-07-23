@@ -11,7 +11,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   count    = azurerm_kubernetes_cluster.aks == null ? 1 : 0
   name                = var.aks_name
   location            = var.location
-  resource_group_name = azurerm_resource_group.this.name
+  resource_group_name = azurerm_resource_group.this[0].name
   dns_prefix          = var.dns_prefix
   kubernetes_version = local.eks_version
 
@@ -29,7 +29,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     admin_username = var.admin_username
 
     ssh_key {
-      key_data = tls_private_key.example.public_key_openssh
+      key_data = tls_private_key.example[0].public_key_openssh
     }
   }
 
