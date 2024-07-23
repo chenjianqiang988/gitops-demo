@@ -3,6 +3,8 @@ controller:
   ingressClassResource:
     name: external-nginx
   service:
+    type: LoadBalancer
+    externalTrafficPolicy: Local  # 或者 Cluster
     annotations:
       service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
   # Required for ACME
