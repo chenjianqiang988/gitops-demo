@@ -99,7 +99,6 @@ kind: Ingress
 metadata:
   name: gitops-ingress
 spec:
-  ingressClassName: external-nginx
   rules:
   - http:
       paths:
